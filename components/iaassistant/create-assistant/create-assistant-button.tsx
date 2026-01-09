@@ -7,7 +7,7 @@ const CreateAssistantButton = () => {
   const { onOpen } = useModal();
 
   return (
-    <Button variant="primary" className="mt-20 mr-10" onClick={() => onOpen("createAssistant")}>
+    <Button variant="primary" onClick={() => onOpen("createAssistant")}>
       Crear asistente
     </Button>
   );

@@ -14,16 +14,14 @@ export default function Home() {
         <div className="flex items-center justify-between mt-20 mb-8">
           <Header
             title="ASISTENTES IA"
-            icon={
-              <Users className="w-10 h-10 text-blue-900 dark:text-zinc-400" />
-            }
+            icon={<Users className="w-full h-full text-blue-900 dark:text-zinc-400" />}
           />
           <CreateAssistantButton />
         </div>
 
         {/* CARD */}
-          <GetAssistant />
-        
+        <GetAssistant />
+
 
       </div>
     </main>

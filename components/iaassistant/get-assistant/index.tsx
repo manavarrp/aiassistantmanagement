@@ -13,10 +13,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/store/modal/modal-store";
 import { Edit, Trash2, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+
 
 const GetAssistant = () => {
     const { assistants, setInitialAssistants } = useAssistantsStore();
     const { onOpen } = useModal();
+    const router = useRouter();
     useEffect(() => {
         setInitialAssistants(initialAssistants);
     }, [setInitialAssistants]);
@@ -31,7 +35,8 @@ const GetAssistant = () => {
         );
     }
 
-    console.log("asdasd", assistants)
+    
+
     return (
         <section className="flex flex-col items-center gap-6">
             {assistants.map((assistant) => (
@@ -75,7 +80,11 @@ const GetAssistant = () => {
                                     Eliminar
                                 </DropdownMenuItem>
 
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        router.push(`/${assistant.id}`);
+                                    }}
+                                >
                                     <Zap className="w-4 h-4 mr-2 text-yellow-600" />
                                     Entrenar
                                 </DropdownMenuItem>
