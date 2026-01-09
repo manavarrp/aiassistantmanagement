@@ -18,11 +18,8 @@ export default function Home() {
           />
           <CreateAssistantButton />
         </div>
-
         {/* CARD */}
         <GetAssistant />
-
-
       </div>
     </main>
   );

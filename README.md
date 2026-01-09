@@ -1,36 +1,134 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+## Clonar el repositorio
 
-First, run the development server:
+git clone <URL_DEL_REPOSITORIO>
+cd <NOMBRE_DEL_REPOSITORIO>
 
-```bash
+## Instalar dependencias
+
+npm install
+
+## Correr en modo desarrollo
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Abre http://localhost:3000 en tu navegador.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Decisiones técnicas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Framework: Next.js con App Router por su soporte nativo para React 18, rutas anidadas y React Server Components.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+TypeScript: Tipado estático para mayor seguridad y autocompletado en VSCode.
 
-## Learn More
+UI: shadcn/ui junto con TailwindCSS, para componentes reutilizables y diseño responsive. Se aprovecharon botones, inputs, selects, checkboxes, diálogos y formularios de la librería.
 
-To learn more about Next.js, take a look at the following resources:
+Zustand: Manejo de estados globales (assistantsStore y modalStore) con persistencia en localStorage para la lista de asistentes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+React Hook Form + Zod: Validaciones de formulario en tiempo real y pasos en el modal de creación/edición de asistentes.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+React Toastify: Mensajes de éxito/error tras operaciones (crear, actualizar, eliminar).
 
-## Deploy on Vercel
+Persistencia:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Entrenamiento del asistente guardado en localStorage.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Chat simulado no persiste para reiniciar conversaciones libremente.
+
+## Características implementadas
+
+1. Lista de asistentes
+
+Visualización de todos los asistentes creados.
+
+Botón de creación, edición y eliminación con confirmación y toast.
+
+2. Creación de asistentes
+
+Modal con pasos:
+
+Información básica: nombre, idioma y tono.
+
+Configuración de respuestas (cortas, medias, largas) y habilitar audio.
+
+Validación en tiempo real.
+
+Guardado en store con persistencia y notificación de éxito.
+
+3. Edición de asistentes
+
+Similar al flujo de creación.
+
+Actualiza datos en tiempo real y notifica con toast.
+
+4. Entrenamiento del asistente
+
+Área de texto para prompts o instrucciones.
+
+Guardado en localStorage.
+
+Mensaje de éxito tras guardar.
+
+Botón “Clear” para resetear entrenamiento.
+
+5. Chat simulado
+
+Interfaz de chat simple (usuario vs asistente).
+
+Input para enviar mensajes.
+
+Respuestas simuladas con delay de 1–2 segundos.
+
+Botón de reinicio de conversación.
+
+Indicador de “escribiendo…” mientras llega la respuesta simulada.
+
+6. Eliminación de asistentes
+
+Confirmación antes de eliminar.
+
+Eliminación inmediata de la lista.
+
+Mensaje de éxito tras eliminar mediante toast.
+
+Persistencia reflejada en localStorage.
+
+7. UX/UI
+
+Layout responsive para desktop y mobile.
+
+Uso de shadcn/ui para componentes reutilizables y consistentes.
+
+Mensajes de validación y éxito/error claros.
+
+Uso de modales para operaciones CRUD.
+
+## Prioridades y limitaciones
+
+Prioricé:
+
+Flujo de creación, edición y entrenamiento de asistentes.
+
+Persistencia de datos clave (lista de asistentes y entrenamiento).
+
+Experiencia responsive y feedback inmediato (toasts y mensajes de error).
+
+Limitaciones actuales:
+
+Persistencia del chat simulado (se reinicia cada sesión).
+
+Estas decisiones permiten un MVP funcional y escalable.
+
+## Tiempo aproximado de dedicación: ~13 horas
+
+Configuración del proyecto y estructuras: 0.5h
+
+Creación de store, persistencia y providers: 2h
+
+Componente de creación/edición/eliminación con shadcn/ui, schema: 4h
+
+Componente de entrenamiento y chat simulado: 3.5h
+
+Diseño responsive y toasts: 1h
+
+Validaciones en tiempo de ejecución: 2h
+

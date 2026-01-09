@@ -15,7 +15,7 @@ export default function AssistantTraining({ assistant }: Props) {
 
   const [prompt, setPrompt] = useState("");
   const [msg, setMsg] = useState("");
-
+  const [loading, setLoading] = useState(false);
   // Cargar entrenamiento desde localStorage
   useEffect(() => {
     const stored = localStorage.getItem(`training_${assistant.id}`);
@@ -23,12 +23,20 @@ export default function AssistantTraining({ assistant }: Props) {
   }, [assistant.id]);
 
   const handleSave = () => {
-    updateAssistant({ ...assistant, training: prompt });
-    localStorage.setItem(`training_${assistant.id}`, prompt);
-    setMsg("¡Entrenamiento guardado!");
-    setTimeout(() => setMsg(""), 2000);
-  };
+    if (!prompt.trim()) return;
 
+    setLoading(true);
+    setTimeout(() => { 
+      updateAssistant({ ...assistant, training: prompt });
+      localStorage.setItem(`training_${assistant.id}`, prompt);
+
+      setMsg("¡Entrenamiento guardado!");
+      setLoading(false); 
+
+      // ocultar mensaje después de 2s
+      setTimeout(() => setMsg(""), 3000);
+    }, 1000); 
+  };
   const handleClear = () => {
     setPrompt("");
     localStorage.removeItem(`training_${assistant.id}`);

@@ -8,6 +8,7 @@ interface ModalData {
   assistant?: Assistant;
 }
 
+// Estado y acciones del store del modal
 interface ModalStore {
   type: ModalType | null;
   isOpen: boolean;

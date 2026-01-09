@@ -23,12 +23,13 @@ type FormData = z.infer<typeof CreateAssistantSchema>;
 export const EditAssistant = () => {
   const { isOpen, onClose, type, data } = useModal();
   const isModalOpen = isOpen && type === "editAssistant";
+  // Asistente a editar
   const assistant = data.assistant;
-
+  // Store: actualizar asistente
   const updateAssistant = useAssistantsStore((state) => state.updateAssistant);
 
   const [step, setStep] = useState<1 | 2>(1);
-
+// Formulario con valores iniciales del asistente
   const form = useForm<FormData>({
     resolver: zodResolver(CreateAssistantSchema),
     defaultValues: assistant || {
@@ -40,11 +41,11 @@ export const EditAssistant = () => {
     },
   });
 
-  // Cuando cambia el asistente a editar, actualizar el formulario
+ // Sincronizar formulario cuando cambia el asistente a editar
   useEffect(() => {
     if (assistant) form.reset(assistant);
   }, [assistant, form]);
-
+ // Validar paso 1 y pasar a paso 2
   const handleNext = async () => {
     const valid = await form.trigger(["name", "language", "tone"]);
     if (valid) setStep(2);
@@ -129,7 +130,7 @@ export const EditAssistant = () => {
                     )}
                   />
                 ))}
-
+                {/* Mostrar mensaje de error o éxito */}
                 {(() => {
                   const errorMessage =
                     form.formState.errors.responseLength?.short?.message ||
@@ -164,6 +165,7 @@ export const EditAssistant = () => {
                 const values = form.getValues();
                 const total = values.responseLength.short + values.responseLength.medium + values.responseLength.long;
                 if (total !== 100) { setStep(2); return; }
+                 // Guardar cambios en el asistente
                 updateAssistant({ id: assistant!.id, ...values, audioEnabled: values.audioEnabled ?? true });
                 form.reset();
                 setStep(1);

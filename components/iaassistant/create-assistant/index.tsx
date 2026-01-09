@@ -23,10 +23,10 @@ type FormData = z.infer<typeof CreateAssistantSchema>;
 export const CreateAssistant = () => {
   const { isOpen, onClose, type } = useModal();
   const isModalOpen = isOpen && type === "createAssistant";
-
+// Store: agregar asistente
   const addAssistant = useAssistantsStore((state) => state.addAssistant);
   const [step, setStep] = useState<1 | 2>(1);
-
+// React Hook Form con validación Zod
   const form = useForm<FormData>({
     resolver: zodResolver(CreateAssistantSchema),
     defaultValues: {
@@ -37,14 +37,11 @@ export const CreateAssistant = () => {
       audioEnabled: false,
     },
   });
-
+// Pasar al siguiente paso tras validar campos del paso 1
   const handleNext = async () => {
     const valid = await form.trigger(["name", "language", "tone"]);
     if (valid) setStep(2);
   };
-
-  const responseValues = form.watch("responseLength");
-  const totalPercent = responseValues.short + responseValues.medium + responseValues.long;
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -53,11 +50,12 @@ export const CreateAssistant = () => {
           <DialogTitle className="text-2xl font-bold">Crear Asistente</DialogTitle>
           <DialogDescription>Paso {step} de 2</DialogDescription>
         </DialogHeader>
-
+        
         <Form {...form}>
           <div className="space-y-4 px-6 py-4">
             {step === 1 && (
               <>
+              {/* Campo nombre */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -71,7 +69,7 @@ export const CreateAssistant = () => {
                     </FormItem>
                   )}
                 />
-
+                 {/* Campo idioma */}
                 <FormField
                   control={form.control}
                   name="language"
@@ -95,7 +93,7 @@ export const CreateAssistant = () => {
                     </FormItem>
                   )}
                 />
-
+                {/* Campo tono */}
                 <FormField
                   control={form.control}
                   name="tone"
@@ -178,7 +176,7 @@ export const CreateAssistant = () => {
                   return null;
                 })()}
 
-
+                {/* Habilitar audio */}
                 <FormField
                   control={form.control}
                   name="audioEnabled"
@@ -217,7 +215,7 @@ export const CreateAssistant = () => {
                     setStep(2); 
                     return;
                   }
-
+                  // Guardar asistente en store
                   addAssistant({ id: crypto.randomUUID(), ...values, audioEnabled: values.audioEnabled ?? true });
                   form.reset();
                   setStep(1);
