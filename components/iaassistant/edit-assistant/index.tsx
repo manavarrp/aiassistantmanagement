@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,16 +20,18 @@ import { CreateAssistantSchema } from "@/schemas/indes";
 
 type FormData = z.infer<typeof CreateAssistantSchema>;
 
-export const CreateAssistant = () => {
-  const { isOpen, onClose, type } = useModal();
-  const isModalOpen = isOpen && type === "createAssistant";
+export const EditAssistant = () => {
+  const { isOpen, onClose, type, data } = useModal();
+  const isModalOpen = isOpen && type === "editAssistant";
+  const assistant = data.assistant;
 
-  const addAssistant = useAssistantsStore((state) => state.addAssistant);
+  const updateAssistant = useAssistantsStore((state) => state.updateAssistant);
+
   const [step, setStep] = useState<1 | 2>(1);
 
   const form = useForm<FormData>({
     resolver: zodResolver(CreateAssistantSchema),
-    defaultValues: {
+    defaultValues: assistant || {
       name: "",
       language: "Español",
       tone: "Formal",
@@ -37,6 +39,11 @@ export const CreateAssistant = () => {
       audioEnabled: false,
     },
   });
+
+  // Cuando cambia el asistente a editar, actualizar el formulario
+  useEffect(() => {
+    if (assistant) form.reset(assistant);
+  }, [assistant, form]);
 
   const handleNext = async () => {
     const valid = await form.trigger(["name", "language", "tone"]);
@@ -50,7 +57,7 @@ export const CreateAssistant = () => {
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6 text-center">
-          <DialogTitle className="text-2xl font-bold">Crear Asistente</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Editar Asistente</DialogTitle>
           <DialogDescription>Paso {step} de 2</DialogDescription>
         </DialogHeader>
 
@@ -58,23 +65,19 @@ export const CreateAssistant = () => {
           <div className="space-y-4 px-6 py-4">
             {step === 1 && (
               <>
-                <FormField
-                  control={form.control}
-                  name="name"
+                <FormField control={form.control} name="name"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nombre</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="Nombre del asistente" />
                       </FormControl>
-                      <FormMessage /> 
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="language"
+                <FormField control={form.control} name="language"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Idioma</FormLabel>
@@ -84,11 +87,7 @@ export const CreateAssistant = () => {
                             <SelectValue placeholder="Selecciona un idioma" />
                           </SelectTrigger>
                           <SelectContent>
-                            {LANGUAGES.map((lang) => (
-                              <SelectItem key={lang.value} value={lang.value}>
-                                {lang.label}
-                              </SelectItem>
-                            ))}
+                            {LANGUAGES.map(lang => <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -96,9 +95,7 @@ export const CreateAssistant = () => {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="tone"
+                <FormField control={form.control} name="tone"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tono</FormLabel>
@@ -108,11 +105,7 @@ export const CreateAssistant = () => {
                             <SelectValue placeholder="Selecciona un tono" />
                           </SelectTrigger>
                           <SelectContent>
-                            {TONES.map((tone) => (
-                              <SelectItem key={tone.value} value={tone.value}>
-                                {tone.label}
-                              </SelectItem>
-                            ))}
+                            {TONES.map(tone => <SelectItem key={tone.value} value={tone.value}>{tone.label}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       </FormControl>
@@ -124,64 +117,30 @@ export const CreateAssistant = () => {
 
             {step === 2 && (
               <>
-                {(["short", "medium", "long"] as const).map((key) => (
-                  <FormField
-                    key={key}
-                    control={form.control}
-                    name={`responseLength.${key}`}
+                {(["short", "medium", "long"] as const).map(key => (
+                  <FormField key={key} control={form.control} name={`responseLength.${key}`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          {key === "short" ? "Cortas (%)" : key === "medium" ? "Medias (%)" : "Largas (%)"}
-                        </FormLabel>
+                        <FormLabel>{key === "short" ? "Cortas (%)" : key === "medium" ? "Medias (%)" : "Largas (%)"}</FormLabel>
                         <FormControl>
-                          <Input
-                            type="number"
-                            {...field}
-                            onChange={(e) => {
-                              field.onChange(Number(e.target.value));
-                              form.trigger("responseLength");
-                            }}
-                          />
+                          <Input type="number" {...field} onChange={e => { field.onChange(Number(e.target.value)); form.trigger("responseLength"); }} />
                         </FormControl>
                       </FormItem>
                     )}
                   />
                 ))}
-                {/* Mostrar mensaje de validación o éxito */}
-                {step === 2 && (() => {
-                  const values = form.watch("responseLength");
-                  const total = values.short + values.medium + values.long;
 
-                  // Buscar si hay algún error en cualquiera de los 3 campos
+                {(() => {
                   const errorMessage =
                     form.formState.errors.responseLength?.short?.message ||
                     form.formState.errors.responseLength?.medium?.message ||
                     form.formState.errors.responseLength?.long?.message;
-
-                  if (errorMessage) {
-                    return (
-                      <p className="text-red-600 text-sm mt-1">
-                        {errorMessage}
-                      </p>
-                    );
-                  }
-
-                  if (total === 100) {
-                    return (
-                      <p className="text-green-600 text-sm mt-1 font-medium">
-                        ¡Haz logrado conseguir el 100%!
-                      </p>
-                    );
-                  }
-
+                  if (errorMessage) return <p className="text-red-600 text-sm mt-1">{errorMessage}</p>;
+                  if (totalPercent === 100) return <p className="text-green-600 text-sm mt-1 font-medium">¡Haz logrado conseguir el 100%!</p>;
                   return null;
                 })()}
 
-
-                <FormField
-                  control={form.control}
-                  name="audioEnabled"
+                <FormField control={form.control} name="audioEnabled"
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2 mt-4">
                       <FormControl>
@@ -196,34 +155,20 @@ export const CreateAssistant = () => {
           </div>
 
           <DialogFooter className="bg-gray-100 px-6 py-4 flex justify-between">
-            {step === 2 && (
-              <Button type="button" variant="secondary" onClick={() => setStep(1)}>
-                Atrás
-              </Button>
-            )}
+            {step === 2 && <Button type="button" variant="secondary" onClick={() => setStep(1)}>Atrás</Button>}
 
             {step === 1 ? (
-              <Button type="button" variant="primary" onClick={handleNext}>
-                Siguiente
-              </Button>
+              <Button type="button" variant="primary" onClick={handleNext}>Siguiente</Button>
             ) : (
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => {
-                  const values = form.getValues();
-                  const total = values.responseLength.short + values.responseLength.medium + values.responseLength.long;
-                  if (total !== 100) {
-                    setStep(2); 
-                    return;
-                  }
-
-                  addAssistant({ id: crypto.randomUUID(), ...values, audioEnabled: values.audioEnabled ?? true });
-                  form.reset();
-                  setStep(1);
-                  onClose();
-                }}
-              >
+              <Button type="button" variant="primary" onClick={() => {
+                const values = form.getValues();
+                const total = values.responseLength.short + values.responseLength.medium + values.responseLength.long;
+                if (total !== 100) { setStep(2); return; }
+                updateAssistant({ id: assistant!.id, ...values, audioEnabled: values.audioEnabled ?? true });
+                form.reset();
+                setStep(1);
+                onClose();
+              }}>
                 Guardar
               </Button>
             )}

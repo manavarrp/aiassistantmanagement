@@ -2,7 +2,7 @@
 import { Assistant } from "@/interfaces";
 import { create } from "zustand";
 
-export type ModalType = "createAssistant" | "updateAssistant" | "deleteAssistant" ;
+export type ModalType = "createAssistant" | "editAssistant" | "deleteAssistant" ;
 
 interface ModalData {
   assistant?: Assistant;

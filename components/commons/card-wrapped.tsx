@@ -13,7 +13,6 @@ const CardWrapped = ({ children }: CardWrappedProps) => {
         ease-in-out
         hover:shadow-lg
         hover:-translate-y-1
-        cursor-pointer
       ">
       <CardContent className="px-5 py-1">
         {children}
